@@ -65,7 +65,7 @@ def main():
     init_session_state()
 
     st.title("Snowflake Earnings War Room")
-    st.caption("Help Snowflake's IR team anticipate analyst questions and prepare executive responses")
+    st.caption("Predict analyst questions. Prepare executive responses.")
 
     # Load API key from secrets
     if 'api_key' not in st.session_state:
