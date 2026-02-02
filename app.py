@@ -13,6 +13,16 @@ st.set_page_config(
     layout="wide"
 )
 
+# Custom CSS to prevent green code text
+st.markdown("""
+<style>
+code {
+    color: inherit !important;
+    background-color: transparent !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 def init_session_state():
     """Initialize session state on first run."""
@@ -179,7 +189,8 @@ def main():
 
                     with col_response:
                         st.markdown("**Executive Response:**")
-                        st.markdown(st.session_state.defenses[i])
+                        defense_text = st.session_state.defenses[i].replace('`', '')
+                        st.markdown(defense_text)
 
                     with col_charts:
                         st.markdown("**Supporting Data:**")
@@ -217,10 +228,8 @@ def main():
                             elif event['type'] in ['defense', 'complete']:
                                 progress_bar.progress(100)
                                 status.success("Defense ready!")
-                                # Remove backticks to prevent green code formatting
-                                clean_content = event['content'].replace('`', '')
-                                st.session_state.defenses[i] = clean_content
-                                st.session_state.current_defense = clean_content
+                                st.session_state.defenses[i] = event['content']
+                                st.session_state.current_defense = event['content']
 
                             elif event['type'] == 'error':
                                 st.error(f"Error: {event['content']}")
