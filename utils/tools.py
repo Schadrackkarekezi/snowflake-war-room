@@ -1,21 +1,12 @@
-"""
-Tools for the AI Agent to query CSV data.
-"""
+"""Tools for querying the CSV data."""
 
 import pandas as pd
 
 
 class DataTools:
-    """Tools that let the AI agent query and explore the data."""
+    """Tools the AI agent can call to look at the data."""
 
     def __init__(self, data: dict, loader):
-        """
-        Initialize with loaded data.
-
-        Args:
-            data: Dictionary of loaded DataFrames
-            loader: DataLoader instance for helper methods
-        """
         self.data = data
         self.loader = loader
 

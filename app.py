@@ -1,6 +1,4 @@
-"""
-Snowflake Earnings War Room - Main Streamlit App
-"""
+"""Main Streamlit app."""
 
 import streamlit as st
 from utils import DataLoader, MetricsEngine, AIClient, QuestionAgent, DefenseAgent, TopicQuestionGenerator, charts

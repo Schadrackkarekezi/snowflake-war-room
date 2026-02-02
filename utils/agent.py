@@ -1,6 +1,4 @@
-"""
-Agentic Question Generator - Autonomously explores data to generate analyst questions.
-"""
+"""AI agents for generating questions and defenses."""
 
 import anthropic
 from typing import Generator
@@ -8,7 +6,7 @@ from utils.tools import DataTools
 
 
 class QuestionAgent:
-    """Agent that uses tool calls to research data and generate tough analyst questions."""
+    """Generates analyst questions by researching the data."""
 
     def __init__(self, api_key: str, data: dict, loader):
         self.client = anthropic.Anthropic(api_key=api_key)
@@ -197,7 +195,7 @@ Generate 2 questions:"""
 
 
 class DefenseAgent:
-    """Agent that researches data to build executive defense responses."""
+    """Drafts executive responses to tough questions."""
 
     def __init__(self, api_key: str, data: dict, loader):
         self.client = anthropic.Anthropic(api_key=api_key)

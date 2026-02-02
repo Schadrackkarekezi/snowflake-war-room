@@ -1,6 +1,4 @@
-"""
-Metrics Engine - Detects anomalies and computes competitive deltas.
-"""
+"""Anomaly detection and metrics analysis."""
 
 import pandas as pd
 
@@ -56,7 +54,7 @@ class MetricsEngine:
                     'moving_avg': round(moving_avg, 1),
                     'deviation_pct': round(deviation * 100, 1),
                     'threat': 'HIGH' if deviation < -0.30 else 'MEDIUM',
-                    'description': f"{col.replace('_', ' ').title()} is {abs(deviation)*100:.0f}% below 4Q average",
+                    'description': f"{col.replace('_', ' ').title()} is {abs(deviation)*100:.0f}% below 4-quarter average",
                     'quarter': quarter,
                     'source_bucket': 1
                 })

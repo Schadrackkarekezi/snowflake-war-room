@@ -1,6 +1,4 @@
-"""
-Charts - Plotly chart generation for drill-down visualizations.
-"""
+"""Plotly charts for the dashboard."""
 
 import plotly.express as px
 import plotly.graph_objects as go

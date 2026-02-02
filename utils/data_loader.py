@@ -1,6 +1,4 @@
-"""
-Data Loader - Loads all CSV datasets into pandas DataFrames.
-"""
+"""Loads CSV data."""
 
 import pandas as pd
 from pathlib import Path
