@@ -280,8 +280,8 @@ def main():
                         st.markdown("---")
                         st.markdown("**Source Data:**")
                         if bucket == '1':
-                            # Filings/Press - show metrics
-                            df = st.session_state.data['snowflake_metrics'].tail(4)
+                            # Filings/Press - show latest metrics
+                            df = st.session_state.data['snowflake_metrics'].head(5)
                             st.caption("From: snowflake_ir_metrics.csv")
                             st.dataframe(df[['FISCAL_QUARTER', 'FISCAL_YEAR', 'PRODUCT_REVENUE_M', 'NRR_PERCENT', 'FCF_IN_MILLIONS', 'RPO_M']], use_container_width=True, hide_index=True)
                         elif bucket == '2':
