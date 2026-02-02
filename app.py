@@ -203,19 +203,19 @@ def main():
                         with chart_tab1:
                             fig = charts.revenue_trend_chart(st.session_state.data['snowflake_metrics'])
                             fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
-                            st.plotly_chart(fig, use_container_width=True)
+                            st.plotly_chart(fig, use_container_width=True, key=f"revenue_{i}")
                         with chart_tab2:
                             fig = charts.nrr_trend_chart(st.session_state.data['snowflake_metrics'])
                             fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
-                            st.plotly_chart(fig, use_container_width=True)
+                            st.plotly_chart(fig, use_container_width=True, key=f"nrr_{i}")
                         with chart_tab3:
                             fig = charts.fcf_chart(st.session_state.data['snowflake_metrics'])
                             fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
-                            st.plotly_chart(fig, use_container_width=True)
+                            st.plotly_chart(fig, use_container_width=True, key=f"fcf_{i}")
                         with chart_tab4:
                             fig = charts.customer_growth_chart(st.session_state.data['snowflake_metrics'])
                             fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
-                            st.plotly_chart(fig, use_container_width=True)
+                            st.plotly_chart(fig, use_container_width=True, key=f"customers_{i}")
                 else:
                     # Generate defense button
                     if st.button("Generate Defense", key=f"defend_{i}", type="secondary"):
