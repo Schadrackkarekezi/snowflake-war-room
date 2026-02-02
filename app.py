@@ -265,9 +265,37 @@ def main():
             data_point = q.get('data_point', '')
 
             with st.expander(f"**{i+1}. {q['question']}**", expanded=True):
-                st.caption(f"[{threat}] | Bucket {bucket}: {source}")
-                if data_point:
-                    st.caption(f"Data: {data_point}")
+                col_meta, col_source = st.columns([4, 1])
+                with col_meta:
+                    st.caption(f"[{threat}] | Bucket {bucket}: {source}")
+                    if data_point:
+                        st.caption(f"Data: {data_point}")
+                with col_source:
+                    if st.button("View Source", key=f"source_{i}", type="secondary"):
+                        st.session_state[f"show_source_{i}"] = not st.session_state.get(f"show_source_{i}", False)
+
+                # Show source data if toggled
+                if st.session_state.get(f"show_source_{i}", False):
+                    with st.container():
+                        st.markdown("---")
+                        st.markdown("**Source Data:**")
+                        if bucket == '1':
+                            # Filings/Press - show metrics
+                            df = st.session_state.data['snowflake_metrics'].tail(4)
+                            st.caption("From: snowflake_ir_metrics.csv")
+                            st.dataframe(df[['FISCAL_QUARTER', 'FISCAL_YEAR', 'PRODUCT_REVENUE_M', 'NRR_PERCENT', 'FCF_IN_MILLIONS', 'RPO_M']], use_container_width=True, hide_index=True)
+                        elif bucket == '2':
+                            # Transcripts
+                            df = st.session_state.data['earnings_transcripts'].head(3)
+                            st.caption("From: earnings_transcripts.csv")
+                            st.dataframe(df[['TICKER', 'EVENT_TYPE', 'EVENT_DATE', 'SYNOPSIS']], use_container_width=True, hide_index=True)
+                        elif bucket == '3':
+                            # Analyst research
+                            df = st.session_state.data['analyst_ratings']
+                            st.caption("From: analyst_ratings.csv")
+                            st.dataframe(df[['ANALYST_FIRM', 'RATING', 'PRICE_TARGET', 'NOTES']], use_container_width=True, hide_index=True)
+                        else:
+                            st.info("Source data not available")
 
                 # Show defense if already generated
                 if i in st.session_state.defenses:
