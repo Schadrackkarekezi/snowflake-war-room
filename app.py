@@ -173,8 +173,25 @@ def main():
                 # Show defense if already generated
                 if i in st.session_state.defenses:
                     st.divider()
-                    st.markdown("**Executive Response:**")
-                    st.markdown(st.session_state.defenses[i])
+
+                    # Two columns: response on left, charts on right
+                    col_response, col_charts = st.columns([1, 1])
+
+                    with col_response:
+                        st.markdown("**Executive Response:**")
+                        st.markdown(st.session_state.defenses[i])
+
+                    with col_charts:
+                        st.markdown("**Supporting Data:**")
+                        chart_tab1, chart_tab2 = st.tabs(["Revenue", "NRR"])
+                        with chart_tab1:
+                            fig = charts.revenue_trend_chart(st.session_state.data['snowflake_metrics'])
+                            fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
+                            st.plotly_chart(fig, use_container_width=True)
+                        with chart_tab2:
+                            fig = charts.nrr_trend_chart(st.session_state.data['snowflake_metrics'])
+                            fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
+                            st.plotly_chart(fig, use_container_width=True)
                 else:
                     # Generate defense button
                     if st.button("Generate Defense", key=f"defend_{i}", type="secondary"):

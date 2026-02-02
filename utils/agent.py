@@ -287,6 +287,7 @@ RESPONSE GUIDELINES:
 5. Use bullet points with key talking points (not paragraphs)
 6. Use executive tone - confident but not dismissive
 7. Always capitalize "Snowflake" (never "snowflake")
+8. NEVER use backticks or code formatting - write numbers as plain text (e.g., $50.5M not `$50.5M`)
 
 FORMAT:
 **Key Talking Points:**
