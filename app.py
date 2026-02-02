@@ -109,8 +109,7 @@ def main():
     if gaps:
         st.subheader("Competitive Position")
         for g in gaps:
-            status = "ahead" if g['advantage'] else "behind"
-            st.markdown(f"vs {g['competitor']}: Snowflake {g['snow_growth']:.1f}% vs {g['comp_growth']:.1f}% growth ({status}, {g['gap']:+.1f}pp)")
+            st.markdown(f"**Snowflake vs {g['competitor']}**: {g['snow_growth']:.1f}% vs {g['comp_growth']:.1f}% revenue growth")
 
     st.divider()
 
