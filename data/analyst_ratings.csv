@@ -1,0 +1,26 @@
+RATING_ID,COMPANY,TICKER,ANALYST_FIRM,RATING,PRICE_TARGET,RATING_DATE,NOTES,CREATED_AT
+115,MongoDB,MDB,Needham,Buy,375.00,2024-12-10,Document model advantage in AI era,2026-01-20 22:03:14.174
+114,MongoDB,MDB,Stifel,Buy,340.00,2024-12-10,Legacy app modernization opportunity,2026-01-20 22:03:14.174
+113,MongoDB,MDB,Goldman Sachs,Buy,360.00,2024-12-10,Atlas growth resilient,2026-01-20 22:03:14.174
+112,MongoDB,MDB,Citi,Buy,380.00,2024-12-10,AI opportunity underappreciated,2026-01-20 22:03:14.174
+111,MongoDB,MDB,Morgan Stanley,Overweight,350.00,2024-12-10,Raised PT on strong enterprise deals,2026-01-20 22:03:14.174
+120,Elastic,ESTC,Mizuho,Buy,98.00,2024-11-22,BBQ feature is game changer,2026-01-20 22:03:14.174
+119,Elastic,ESTC,Piper Sandler,Overweight,105.00,2024-11-22,SIEM consolidation opportunity,2026-01-20 22:03:14.174
+118,Elastic,ESTC,Barclays,Overweight,90.00,2024-11-22,Sales execution improving,2026-01-20 22:03:14.174
+117,Elastic,ESTC,JPMorgan,Overweight,100.00,2024-11-22,Vector search differentiation strong,2026-01-20 22:03:14.174
+116,Elastic,ESTC,UBS,Buy,95.00,2024-11-22,Gen AI driving search renaissance,2026-01-20 22:03:14.174
+102,Snowflake,SNOW,Goldman Sachs,Buy,200.00,2024-11-21,"Strong execution, Cortex AI adoption",2026-01-20 22:03:14.174
+105,Snowflake,SNOW,Citi,Buy,195.00,2024-11-21,RPO growth acceleration encouraging,2026-01-20 22:03:14.174
+104,Snowflake,SNOW,Barclays,Equal Weight,160.00,2024-11-21,Valuation concerns despite strong results,2026-01-20 22:03:14.174
+103,Snowflake,SNOW,JPMorgan,Overweight,185.00,2024-11-21,Iceberg strategy driving new workloads,2026-01-20 22:03:14.174
+101,Snowflake,SNOW,Morgan Stanley,Overweight,190.00,2024-11-21,"Raised PT after strong Q3, AI momentum",2026-01-20 22:03:14.174
+110,Datadog,DDOG,RBC Capital,Outperform,158.00,2024-11-08,Cloud consumption trends improving,2026-01-20 22:03:14.174
+109,Datadog,DDOG,Wells Fargo,Overweight,145.00,2024-11-08,Strong execution in competitive market,2026-01-20 22:03:14.174
+108,Datadog,DDOG,Deutsche Bank,Buy,150.00,2024-11-08,LLM observability gaining traction,2026-01-20 22:03:14.174
+107,Datadog,DDOG,Barclays,Overweight,155.00,2024-11-08,Platform expansion drives stickiness,2026-01-20 22:03:14.174
+106,Datadog,DDOG,Morgan Stanley,Overweight,160.00,2024-11-08,AI native momentum impressive,2026-01-20 22:03:14.174
+121,Confluent,CFLT,Morgan Stanley,Equal Weight,28.00,2024-10-31,Improving profitability trajectory,2026-01-20 22:03:14.174
+122,Confluent,CFLT,Goldman Sachs,Buy,32.00,2024-10-31,DSP products gaining traction,2026-01-20 22:03:14.174
+123,Confluent,CFLT,Citi,Neutral,26.00,2024-10-31,Cloud optimization headwinds easing,2026-01-20 22:03:14.174
+124,Confluent,CFLT,Barclays,Overweight,30.00,2024-10-31,Flink opportunity significant,2026-01-20 22:03:14.174
+125,Confluent,CFLT,Evercore,Outperform,35.00,2024-10-31,AI use cases driving interest,2026-01-20 22:03:14.174

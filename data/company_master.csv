@@ -1,0 +1,11 @@
+COMPANY_ID,COMPANY_NAME,TICKER_SYMBOL,SEC_CIK,SECTOR,IS_SNOWFLAKE_COMPETITOR,COMPANY_TYPE,FOUNDED_YEAR,IPO_DATE,HEADQUARTERS,CREATED_AT
+SNOW,Snowflake Inc.,SNOW,0001640147,Cloud Data Platform,false,Subject Company,2012,2020-09-16,"Bozeman, MT",2026-01-22 02:25:30.089
+GOOGL,Alphabet Inc.,GOOGL,0001652044,Technology/Cloud,true,Mag7/Cloud,2015,2004-08-19,"Mountain View, CA",2026-01-22 02:25:30.089
+AMZN,Amazon.com Inc.,AMZN,0001018724,Technology/Cloud,true,Mag7/Cloud,1994,1997-05-15,"Seattle, WA",2026-01-22 02:25:30.089
+MSFT,Microsoft Corporation,MSFT,0000789019,Technology/Cloud,true,Mag7/Cloud,1975,1986-03-13,"Redmond, WA",2026-01-22 02:25:30.089
+MDB,MongoDB Inc.,MDB,0001441816,Database,true,Database Vendor,2007,2017-10-19,"New York, NY",2026-01-22 02:25:30.089
+TDC,Teradata Corporation,TDC,0000816761,Data Warehousing,true,Legacy DW,1979,2007-10-01,"San Diego, CA",2026-01-22 02:25:30.089
+ORCL,Oracle Corporation,ORCL,0001341439,Enterprise Software,true,Legacy DW,1977,1986-03-12,"Austin, TX",2026-01-22 02:25:30.089
+SAP,SAP SE,SAP,0001000184,Enterprise Software,true,Enterprise Software,1972,1998-08-03,"Walldorf, Germany",2026-01-22 02:25:30.089
+CLDR,Cloudera Inc.,CLDR,0001535379,Big Data,true,Big Data Platform,2008,2017-04-28,"Santa Clara, CA",2026-01-22 02:25:30.089
+DDOG,Datadog Inc.,DDOG,0001561550,Observability,true,Cloud Monitoring,2010,2019-09-19,"New York, NY",2026-01-22 02:25:30.089
