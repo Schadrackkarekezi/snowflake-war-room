@@ -27,6 +27,7 @@ def init_session_state():
         )
         st.session_state.analysis = engine.run_analysis()
         st.session_state.kpis = engine.get_latest_kpis()
+        st.session_state.engine = engine
 
         st.session_state.data_loaded = True
         st.session_state.questions = []
@@ -50,6 +51,7 @@ def parse_questions(response: str) -> list:
                 bucket = line.split(':')[1].strip()
                 bucket_names = {'1': 'Filings/Press', '2': 'Transcripts', '3': 'Analyst Research'}
                 q['source'] = bucket_names.get(bucket, bucket)
+                q['bucket'] = bucket
             if 'DATA_POINT:' in line:
                 q['data_point'] = line.split(':', 1)[1].strip()
 
@@ -62,100 +64,182 @@ def parse_questions(response: str) -> list:
 def main():
     init_session_state()
 
-    # Header
-    st.title("❄️ Snowflake Earnings War Room")
+    st.title("Snowflake Earnings War Room")
+    st.caption("Help Snowflake's IR team anticipate analyst questions and prepare executive responses")
 
-    # Load API key
+    # Load API key from secrets
     if 'api_key' not in st.session_state:
         try:
             api_key = st.secrets["ANTHROPIC_API_KEY"]
             st.session_state.api_key = api_key
             st.session_state.ai_client = AIClient(api_key)
         except Exception:
-            st.error("API key not configured")
-            return
+            st.sidebar.error("API key not configured. Add ANTHROPIC_API_KEY to secrets.")
 
-    # KPIs Row
-    st.subheader("📊 Key Metrics")
+    # Phase 1: Dashboard
+    st.header("Latest Quarter KPIs")
     kpis = st.session_state.kpis
+
     cols = st.columns(4)
     kpi_items = [(k, v) for k, v in kpis.items() if k != 'Quarter']
     for i, (label, value) in enumerate(kpi_items[:4]):
-        cols[i].metric(label, value)
+        with cols[i]:
+            st.metric(label, value)
 
-    # Anomalies
+    cols2 = st.columns(4)
+    for i, (label, value) in enumerate(kpi_items[4:8]):
+        with cols2[i]:
+            st.metric(label, value)
+
+    st.caption(f"Data as of {kpis.get('Quarter', 'N/A')}")
+
+    # Show detected anomalies
+    st.header("Detected Anomalies")
     anomalies = st.session_state.analysis['anomalies']
+
     if anomalies:
-        st.subheader("⚠️ Flagged Issues")
         for a in anomalies:
-            emoji = {'HIGH': '🔴', 'MEDIUM': '🟠'}.get(a['threat'], '🟡')
-            st.write(f"{emoji} **{a['metric']}**: {a['description']}")
+            threat_label = f"[{a['threat']}]"
+            st.markdown(f"**{threat_label} {a['metric']}**: {a['description']}")
+    else:
+        st.info("No significant anomalies detected")
+
+    # Competitive gaps
+    gaps = st.session_state.analysis['competitive_gaps']
+    if gaps:
+        st.subheader("Competitive Position")
+        for g in gaps:
+            status = "ahead" if g['advantage'] else "behind"
+            st.markdown(f"vs {g['competitor']}: Snowflake {g['snow_growth']:.1f}% vs {g['comp_growth']:.1f}% growth ({status}, {g['gap']:+.1f}pp)")
 
     st.divider()
 
-    # Question Generation
-    st.subheader("🎯 Generate Analyst Questions")
+    # Phase 2: Generate Questions
+    st.header("Phase 2: Anticipate Analyst Questions")
+    st.caption("Agentic Mode: AI explores data to find questions Wall Street will ask Snowflake")
 
-    if st.button("🚀 Launch Agent", type="primary"):
-        agent = QuestionAgent(
-            api_key=st.session_state.api_key,
-            data=st.session_state.data,
-            loader=st.session_state.loader
-        )
+    if st.button("Launch Agent", type="primary", disabled='ai_client' not in st.session_state):
+        if 'ai_client' not in st.session_state:
+            st.error("Please configure API key")
+        else:
+            agent = QuestionAgent(
+                api_key=st.session_state.api_key,
+                data=st.session_state.data,
+                loader=st.session_state.loader
+            )
 
-        with st.spinner("Agent researching data..."):
+            status = st.empty()
+            progress_bar = st.progress(0)
+
+            status.info("Agent researching data...")
+            step = 0
+
             for event in agent.run():
-                if event['type'] in ['questions', 'complete']:
-                    st.session_state.questions = parse_questions(event['content'])
-                elif event['type'] == 'error':
-                    st.error(event['content'])
-        st.rerun()
+                if event['type'] == 'tool_call':
+                    tool = event.get('tool', '')
+                    step += 1
+                    progress_bar.progress(min(step * 20, 80))
+                    status.info(f"Checking: {tool.replace('_', ' ')}...")
 
-    # Display Questions
+                elif event['type'] in ['questions', 'complete']:
+                    progress_bar.progress(100)
+                    status.success("Questions generated!")
+                    st.session_state.questions = parse_questions(event['content'])
+                    st.session_state.raw_response = event['content']
+
+                elif event['type'] == 'error':
+                    st.error(f"Agent error: {event['content']}")
+
+            st.rerun()
+
+    # Display parsed questions
     if st.session_state.questions:
+        st.subheader("Generated Questions")
+
         for i, q in enumerate(st.session_state.questions):
             threat = q.get('threat', 'MEDIUM')
-            emoji = {'HIGH': '🔴', 'MEDIUM': '🟠', 'LOW': '🟡'}.get(threat, '⚪')
+            source = q.get('source', 'Unknown')
+            bucket = q.get('bucket', '?')
+            data_point = q.get('data_point', '')
 
-            col1, col2 = st.columns([6, 1])
-            with col1:
-                st.write(f"**{i+1}. {q['question']}**")
-                st.caption(f"{emoji} {threat} | {q.get('source', 'Unknown')}")
-            with col2:
-                if st.button("Defend", key=f"def_{i}"):
-                    st.session_state.selected_question = q
-                    st.session_state.show_defense = True
+            with st.container():
+                col1, col2 = st.columns([5, 1])
+                with col1:
+                    st.markdown(f"**{i+1}. {q['question']}**")
+                    st.caption(f"[{threat}] | Bucket {bucket}: {source}")
+                    if data_point:
+                        st.caption(f"Data: {data_point}")
+                with col2:
+                    if st.button("Defend", key=f"defend_{i}"):
+                        st.session_state.selected_question = q
+                        st.session_state.show_defense = True
+                st.divider()
 
-    # Defense Section
+    # Phase 3: Defend
     if st.session_state.get('show_defense') and st.session_state.get('selected_question'):
-        st.divider()
-        st.subheader("🛡️ Executive Response")
+        st.header("Phase 3: Prepare Executive Response")
+        st.caption("Agentic Mode: AI researches data to draft Snowflake's response")
         q = st.session_state.selected_question
-        st.info(q['question'])
+        st.info(f"**Question:** {q['question']}")
 
-        if st.button("Generate Response", type="primary"):
+        if st.button("Generate Defense", type="primary"):
             defense_agent = DefenseAgent(
                 api_key=st.session_state.api_key,
                 data=st.session_state.data,
                 loader=st.session_state.loader
             )
 
-            with st.spinner("Preparing response..."):
-                for event in defense_agent.run(question=q['question'], kpis=st.session_state.kpis):
-                    if event['type'] in ['defense', 'complete']:
-                        st.session_state.current_defense = event['content']
+            status = st.empty()
+            progress_bar = st.progress(0)
+            response_container = st.empty()
 
+            status.info("Agent researching defensive data...")
+            step = 0
+
+            for event in defense_agent.run(question=q['question'], kpis=st.session_state.kpis):
+                if event['type'] == 'tool_call':
+                    tool = event.get('tool', '')
+                    step += 1
+                    progress_bar.progress(min(step * 25, 75))
+                    status.info(f"Researching: {tool.replace('_', ' ')}...")
+
+                elif event['type'] in ['defense', 'complete']:
+                    progress_bar.progress(100)
+                    status.success("Defense generated!")
+                    response_container.markdown(event['content'])
+                    st.session_state.current_defense = event['content']
+
+                elif event['type'] == 'error':
+                    st.error(f"Agent error: {event['content']}")
+
+        # Phase 4: Drill into data
         if st.session_state.current_defense:
-            st.markdown(st.session_state.current_defense)
-
-            # Charts
             st.divider()
-            st.subheader("📈 Supporting Data")
-            tab1, tab2 = st.tabs(["Revenue", "NRR"])
+            st.header("Phase 4: Drill Into Data")
+
+            tab1, tab2, tab3, tab4 = st.tabs(["Revenue Trend", "NRR Trend", "FCF", "Customers"])
+
             with tab1:
-                st.plotly_chart(charts.revenue_trend_chart(st.session_state.data['snowflake_metrics']), use_container_width=True)
+                fig = charts.revenue_trend_chart(st.session_state.data['snowflake_metrics'])
+                st.plotly_chart(fig, use_container_width=True)
+
             with tab2:
-                st.plotly_chart(charts.nrr_trend_chart(st.session_state.data['snowflake_metrics']), use_container_width=True)
+                fig = charts.nrr_trend_chart(st.session_state.data['snowflake_metrics'])
+                st.plotly_chart(fig, use_container_width=True)
+
+            with tab3:
+                fig = charts.fcf_chart(st.session_state.data['snowflake_metrics'])
+                st.plotly_chart(fig, use_container_width=True)
+
+            with tab4:
+                fig = charts.customer_growth_chart(st.session_state.data['snowflake_metrics'])
+                st.plotly_chart(fig, use_container_width=True)
+
+            if gaps:
+                st.subheader("Competitive Comparison")
+                snow_growth = gaps[0]['snow_growth'] if gaps else 0
+                fig = charts.competitive_growth_chart(snow_growth, gaps)
+                st.plotly_chart(fig, use_container_width=True)
 
 
 if __name__ == "__main__":
