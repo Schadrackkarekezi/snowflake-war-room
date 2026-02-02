@@ -21,26 +21,27 @@ class QuestionAgent:
 
         system_prompt = """You are helping Snowflake's Investor Relations team prepare for their upcoming earnings call.
 
-YOUR GOAL: Generate the toughest questions that Wall Street analysts are likely to ask, so Snowflake executives can prepare strong responses.
+YOUR GOAL: Generate the toughest questions that Wall Street analysts are likely to ask about the LATEST QUARTER (Q3 FY2026).
+
+CRITICAL: Focus ONLY on the MOST RECENT quarter's data. Do NOT ask about old quarters like Q3 2023 - only the current/latest quarter matters for the upcoming call.
 
 STRATEGY (be efficient - 3 tool calls max):
-1. Call check_anomalies() to find weaknesses analysts will probe
+1. Call check_anomalies() to find current weaknesses analysts will probe
 2. Call get_analyst_ratings() to see what sell-side is concerned about
 3. Call generate_questions() with your findings
 
-GOOD QUESTIONS (sharp, comparative, insight-driven):
-- "Why did R&D headcount increase in Q3 more than historical quarters?" (10-Q Filing)
-- "Datadog reports 12% AI-native revenue - what percentage of your revenue comes from AI workloads?" (DDOG Transcript)
-- "Jefferies flagged cannibalization risk between AI/ML and core warehouse - how do you respond?" (Jefferies Research)
-- "Your NRR declined from 178% to 165% - what's driving the slowdown vs peers?" (Q3 Filing)
+GOOD QUESTIONS (sharp, comparative, about CURRENT data):
+- "Your current FCF of $110.5M is 47% below your 4-quarter average - what's driving this?" (Latest Filing)
+- "Datadog reports 12% AI-native revenue - what percentage of Snowflake's revenue comes from AI workloads?" (DDOG Transcript)
+- "Your NRR declined to 125% from 178% two years ago - when will this stabilize?" (Latest Filing)
 
-BAD QUESTIONS (too generic - AVOID these):
-- "How is revenue growth?" - No specific data
-- "What's your outlook?" - Not insight-driven
-- "Tell us about competition" - Not comparative
+BAD QUESTIONS (AVOID):
+- Questions about old quarters (Q3 2023, Q4 2022, etc.)
+- Generic questions without specific current data
+- Questions not relevant to the upcoming call
 
 RULES:
-- Only use numbers from tool results - don't make up data
+- Only use numbers from the LATEST quarter in tool results
 - Each question needs a source citation in parentheses
 - Frame questions as what analysts will ASK Snowflake
 - Always capitalize "Snowflake" (never "snowflake")
@@ -98,27 +99,33 @@ RULES:
     def _generate_final_questions(self, findings: str, actual_data: str) -> str:
         """Generate final questions using only the actual data collected."""
 
-        prompt = f"""Generate 5 tough questions that Wall Street analysts will likely ask Snowflake's executives on the earnings call.
+        prompt = f"""Generate 5 tough questions that Wall Street analysts will likely ask Snowflake's executives on the upcoming earnings call.
 
-PURPOSE: Help Snowflake's IR team prepare responses for their toughest questions.
+PURPOSE: Help Snowflake's IR team prepare responses for the LATEST quarter (Q3 FY2026).
+
+CRITICAL - LATEST DATA ONLY:
+- Focus on the MOST RECENT quarter (Q3 FY2026, ending Oct 2025)
+- Current metrics: Revenue $1,160M, FCF $110.5M, NRR 125%, RPO $6.9B, 688 customers >$1M
+- Do NOT reference old quarters like Q3 2023, Q4 2022, etc.
 
 QUESTION STYLE - Make them COMPARATIVE and SPECIFIC:
 - Compare Snowflake to competitors (DDOG, MDB, AWS, Azure)
-- Reference specific trends or anomalies in the data
-- Cite exact numbers from the data
-- Ask "why" and "how" questions that probe weaknesses
+- Reference the CURRENT quarter's anomalies
+- Cite exact numbers from the LATEST data
+- Ask "why" and "how" questions that probe current weaknesses
 
 EXAMPLE GOOD QUESTIONS:
-- "Why did [metric] change by X% when peers like DDOG showed Y%?" (Source)
+- "Your current FCF of $110.5M is 47% below average - what's driving this?" (Latest Filing)
+- "NRR has declined to 125% from 178% - when will it stabilize?" (Latest Filing)
 - "Analyst X flagged [concern] - how do you respond?" (Research Note)
-- "Your [metric] declined from X to Y - what's the driver?" (Filing)
 
-AVOID GENERIC QUESTIONS LIKE:
-- "How is growth?" or "What's your outlook?"
+AVOID:
+- Questions about old/historical quarters
+- Generic questions like "How is growth?"
 
-CRITICAL:
-- Only use numbers that appear in ACTUAL DATA. Don't make up numbers.
-- Always capitalize "Snowflake" (never "snowflake").
+RULES:
+- Only use numbers from ACTUAL DATA below - don't make up numbers
+- Always capitalize "Snowflake" (never "snowflake")
 
 AGENT SUMMARY:
 {findings}
