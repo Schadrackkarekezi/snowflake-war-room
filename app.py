@@ -199,13 +199,21 @@ def main():
 
                     with col_charts:
                         st.markdown("**Supporting Data:**")
-                        chart_tab1, chart_tab2 = st.tabs(["Revenue", "NRR"])
+                        chart_tab1, chart_tab2, chart_tab3, chart_tab4 = st.tabs(["Revenue", "NRR", "FCF", "Customers"])
                         with chart_tab1:
                             fig = charts.revenue_trend_chart(st.session_state.data['snowflake_metrics'])
                             fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
                             st.plotly_chart(fig, use_container_width=True)
                         with chart_tab2:
                             fig = charts.nrr_trend_chart(st.session_state.data['snowflake_metrics'])
+                            fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
+                            st.plotly_chart(fig, use_container_width=True)
+                        with chart_tab3:
+                            fig = charts.fcf_chart(st.session_state.data['snowflake_metrics'])
+                            fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
+                            st.plotly_chart(fig, use_container_width=True)
+                        with chart_tab4:
+                            fig = charts.customer_growth_chart(st.session_state.data['snowflake_metrics'])
                             fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
                             st.plotly_chart(fig, use_container_width=True)
                 else:
@@ -242,35 +250,6 @@ def main():
                                 st.error(f"Error: {event['content']}")
 
                         st.rerun()
-
-        # Phase 4: Drill into data
-        if st.session_state.current_defense:
-            st.divider()
-            st.header("Phase 4: Drill Into Data")
-
-            tab1, tab2, tab3, tab4 = st.tabs(["Revenue Trend", "NRR Trend", "FCF", "Customers"])
-
-            with tab1:
-                fig = charts.revenue_trend_chart(st.session_state.data['snowflake_metrics'])
-                st.plotly_chart(fig, use_container_width=True)
-
-            with tab2:
-                fig = charts.nrr_trend_chart(st.session_state.data['snowflake_metrics'])
-                st.plotly_chart(fig, use_container_width=True)
-
-            with tab3:
-                fig = charts.fcf_chart(st.session_state.data['snowflake_metrics'])
-                st.plotly_chart(fig, use_container_width=True)
-
-            with tab4:
-                fig = charts.customer_growth_chart(st.session_state.data['snowflake_metrics'])
-                st.plotly_chart(fig, use_container_width=True)
-
-            if gaps:
-                st.subheader("Competitive Comparison")
-                snow_growth = gaps[0]['snow_growth'] if gaps else 0
-                fig = charts.competitive_growth_chart(snow_growth, gaps)
-                st.plotly_chart(fig, use_container_width=True)
 
 
 if __name__ == "__main__":

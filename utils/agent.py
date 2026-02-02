@@ -280,23 +280,24 @@ CURRENT METRICS:
 {kpi_summary}
 
 RESPONSE GUIDELINES:
-1. Start by acknowledging the question directly - don't dodge
-2. Provide data-backed rebuttal with specific numbers from above
-3. Highlight strategic strengths, momentum, or competitive advantages
-4. End with forward-looking confidence
-5. Use bullet points with key talking points (not paragraphs)
-6. Use executive tone - confident but not dismissive
-7. Always capitalize "Snowflake" (never "snowflake")
-8. CRITICAL: NEVER use backticks, code blocks, or monospace formatting. Write all numbers as plain text. Wrong: `$50.5M` or `110.5M`. Correct: $50.5M or 110.5M
+1. Acknowledge the concern, then counter with data
+2. KEEP BULLET POINTS SHORT - max 15 words each, numbers first
+3. Always capitalize "Snowflake" (never "snowflake")
+4. NEVER use backticks or code formatting - write $50.5M not `$50.5M`
 
 FORMAT:
 **Key Talking Points:**
-- [Point 1 with specific data]
-- [Point 2 with specific data]
-- [Point 3 with specific data]
+- [Number] - [Brief explanation, max 15 words]
+- [Number] - [Brief explanation, max 15 words]
+- [Number] - [Brief explanation, max 15 words]
 
 **Suggested Response:**
-[Brief 2-3 sentence executive response]
+[2 sentences max - acknowledge concern, give key counter-point]
+
+EXAMPLE OF GOOD BULLET POINTS:
+- FCF rebounded: $50M → $297M → $283M in 3 quarters
+- 688 customers over $1M (+252 YoY) - enterprise momentum strong
+- 6.9B RPO (+33% YoY) - future revenue visibility solid
 
 Generate the response:"""
 
