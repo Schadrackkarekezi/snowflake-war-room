@@ -150,6 +150,52 @@ Generate 5 questions:"""
         return response.content[0].text
 
 
+class TopicQuestionGenerator:
+    """Generates specific analyst questions from a user-provided topic."""
+
+    def __init__(self, api_key: str, data: dict):
+        self.client = anthropic.Anthropic(api_key=api_key)
+        self.model = "claude-sonnet-4-20250514"
+        self.data = data
+
+    def generate(self, topic: str) -> list:
+        """Generate 2 specific analyst questions from a topic."""
+
+        # Get latest metrics for context
+        metrics = self.data['snowflake_metrics'].head(1).to_dict('records')[0]
+
+        prompt = f"""Generate 2 specific, tough analyst questions about this topic: "{topic}"
+
+CONTEXT - Snowflake's latest metrics:
+- Product Revenue: ${metrics.get('PRODUCT_REVENUE_M', 'N/A')}M
+- NRR: {metrics.get('NRR_PERCENT', 'N/A')}%
+- FCF: ${metrics.get('FCF_IN_MILLIONS', 'N/A')}M
+- RPO: ${metrics.get('RPO_M', 'N/A')}M
+- $1M+ Customers: {metrics.get('CUSTOMERS_1M_PLUS', 'N/A')}
+
+RULES:
+- Questions should be specific and use real numbers
+- Questions should be what Wall Street analysts would ask
+- Always capitalize "Snowflake"
+- Include a source citation in parentheses
+
+FORMAT (exactly):
+QUESTION: [Specific question with data] (Source)
+THREAT_LEVEL: [HIGH/MEDIUM/LOW]
+SOURCE_BUCKET: [1=Filings, 2=Transcripts, 3=Research]
+DATA_POINT: [Key data point]
+
+Generate 2 questions:"""
+
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=1000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        return response.content[0].text
+
+
 class DefenseAgent:
     """Agent that researches data to build executive defense responses."""
 

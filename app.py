@@ -3,7 +3,7 @@ Snowflake Earnings War Room - Main Streamlit App
 """
 
 import streamlit as st
-from utils import DataLoader, MetricsEngine, AIClient, QuestionAgent, DefenseAgent, charts
+from utils import DataLoader, MetricsEngine, AIClient, QuestionAgent, DefenseAgent, TopicQuestionGenerator, charts
 import re
 
 # Page config
@@ -178,75 +178,31 @@ def main():
     with col_btn:
         ask_custom = st.button("Ask", type="primary", disabled='ai_client' not in st.session_state)
 
-    # Handle custom question
+    # Handle custom topic - generate questions first
     if ask_custom and custom_topic:
-        if 'custom_questions' not in st.session_state:
-            st.session_state.custom_questions = []
-
-        defense_agent = DefenseAgent(
+        generator = TopicQuestionGenerator(
             api_key=st.session_state.api_key,
-            data=st.session_state.data,
-            loader=st.session_state.loader
+            data=st.session_state.data
         )
 
         status = st.empty()
         progress_bar = st.progress(0)
 
-        status.info(f"Researching: {custom_topic}...")
-        step = 0
+        status.info(f"Generating questions about: {custom_topic}...")
+        progress_bar.progress(50)
 
-        for event in defense_agent.run(question=custom_topic, kpis=st.session_state.kpis):
-            if event['type'] == 'tool_call':
-                tool = event.get('tool', '')
-                step += 1
-                progress_bar.progress(min(step * 25, 75))
-                status.info(f"Researching: {tool.replace('_', ' ')}...")
+        result = generator.generate(custom_topic)
+        progress_bar.progress(100)
+        status.success("Questions generated!")
 
-            elif event['type'] in ['defense', 'complete']:
-                progress_bar.progress(100)
-                status.success("Response ready!")
-                clean = re.sub(r'`+', '', event['content'])
-                # Add to custom questions list
-                st.session_state.custom_questions.append({
-                    'question': custom_topic,
-                    'response': clean
-                })
-
-            elif event['type'] == 'error':
-                st.error(f"Error: {event['content']}")
+        # Parse and add to main questions list
+        new_questions = parse_questions(result)
+        for q in new_questions:
+            q['custom'] = True
+            q['topic'] = custom_topic
+        st.session_state.questions = new_questions + st.session_state.questions
 
         st.rerun()
-
-    # Display custom questions
-    if st.session_state.get('custom_questions'):
-        st.subheader("Your Custom Questions")
-        for idx, cq in enumerate(st.session_state.custom_questions):
-            with st.expander(f"**{cq['question']}**", expanded=True):
-                col_response, col_charts = st.columns([1, 1])
-
-                with col_response:
-                    st.markdown("**Executive Response:**")
-                    st.markdown(cq['response'])
-
-                with col_charts:
-                    st.markdown("**Supporting Data:**")
-                    chart_tab1, chart_tab2, chart_tab3, chart_tab4 = st.tabs(["Revenue", "NRR", "FCF", "Customers"])
-                    with chart_tab1:
-                        fig = charts.revenue_trend_chart(st.session_state.data['snowflake_metrics'])
-                        fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
-                        st.plotly_chart(fig, use_container_width=True, key=f"custom_revenue_{idx}")
-                    with chart_tab2:
-                        fig = charts.nrr_trend_chart(st.session_state.data['snowflake_metrics'])
-                        fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
-                        st.plotly_chart(fig, use_container_width=True, key=f"custom_nrr_{idx}")
-                    with chart_tab3:
-                        fig = charts.fcf_chart(st.session_state.data['snowflake_metrics'])
-                        fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
-                        st.plotly_chart(fig, use_container_width=True, key=f"custom_fcf_{idx}")
-                    with chart_tab4:
-                        fig = charts.customer_growth_chart(st.session_state.data['snowflake_metrics'])
-                        fig.update_layout(height=250, margin=dict(t=30, b=30, l=30, r=30))
-                        st.plotly_chart(fig, use_container_width=True, key=f"custom_customers_{idx}")
 
     st.divider()
 
