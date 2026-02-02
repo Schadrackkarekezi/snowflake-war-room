@@ -217,8 +217,10 @@ def main():
                             elif event['type'] in ['defense', 'complete']:
                                 progress_bar.progress(100)
                                 status.success("Defense ready!")
-                                st.session_state.defenses[i] = event['content']
-                                st.session_state.current_defense = event['content']
+                                # Remove backticks to prevent green code formatting
+                                clean_content = event['content'].replace('`', '')
+                                st.session_state.defenses[i] = clean_content
+                                st.session_state.current_defense = clean_content
 
                             elif event['type'] == 'error':
                                 st.error(f"Error: {event['content']}")
