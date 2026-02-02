@@ -59,9 +59,11 @@ def parse_questions(response: str) -> list:
             if 'THREAT_LEVEL:' in line:
                 q['threat'] = line.split(':')[1].strip()
             if 'SOURCE_BUCKET:' in line:
-                bucket = line.split(':')[1].strip()
+                bucket_raw = line.split(':')[1].strip()
+                # Extract just the number (1, 2, or 3)
+                bucket = bucket_raw[0] if bucket_raw else '?'
                 bucket_names = {'1': 'Filings/Press', '2': 'Transcripts', '3': 'Analyst Research'}
-                q['source'] = bucket_names.get(bucket, bucket)
+                q['source'] = bucket_names.get(bucket, bucket_raw)
                 q['bucket'] = bucket
             if 'DATA_POINT:' in line:
                 q['data_point'] = line.split(':', 1)[1].strip()
