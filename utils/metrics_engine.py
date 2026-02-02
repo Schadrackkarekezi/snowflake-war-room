@@ -34,7 +34,7 @@ class MetricsEngine:
             return
 
         current = self.snow_df.iloc[0]
-        quarter = f"FY{current['FISCAL_YEAR']}Q{current['FISCAL_QUARTER']}"
+        quarter = f"Q{current['FISCAL_QUARTER']} FY{current['FISCAL_YEAR']}"
 
         for col in self.METRICS:
             if col not in self.snow_df.columns:
@@ -81,7 +81,7 @@ class MetricsEngine:
                 'deviation_pct': round((nrr[0] - nrr[3]) / nrr[3] * 100, 1),
                 'threat': 'HIGH',
                 'description': f"NRR declining for 4 quarters: {nrr[3]}% → {nrr[0]}%",
-                'quarter': f"FY{current['FISCAL_YEAR']}Q{current['FISCAL_QUARTER']}",
+                'quarter': f"Q{current['FISCAL_QUARTER']} FY{current['FISCAL_YEAR']}",
                 'source_bucket': 1
             })
 
@@ -136,5 +136,5 @@ class MetricsEngine:
             '$1M+ Customers': f"{int(q['CUSTOMERS_1M_PLUS']):,}",
             'FCF': f"${q['FCF_IN_MILLIONS']:.1f}M",
             'Gross Margin': f"{q['GROSS_MARGIN_PERCENT']:.0f}%",
-            'Quarter': f"FY{q['FISCAL_YEAR']}Q{q['FISCAL_QUARTER']}"
+            'Quarter': f"Q{q['FISCAL_QUARTER']} FY{q['FISCAL_YEAR']}"
         }

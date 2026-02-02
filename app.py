@@ -151,7 +151,11 @@ def main():
 
             st.rerun()
 
-    # Display parsed questions
+    # Initialize defenses storage
+    if 'defenses' not in st.session_state:
+        st.session_state.defenses = {}
+
+    # Display parsed questions with inline defense
     if st.session_state.questions:
         st.subheader("Generated Questions")
 
@@ -161,55 +165,48 @@ def main():
             bucket = q.get('bucket', '?')
             data_point = q.get('data_point', '')
 
-            with st.container():
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    st.markdown(f"**{i+1}. {q['question']}**")
-                    st.caption(f"[{threat}] | Bucket {bucket}: {source}")
-                    if data_point:
-                        st.caption(f"Data: {data_point}")
-                with col2:
-                    if st.button("Defend", key=f"defend_{i}"):
-                        st.session_state.selected_question = q
-                        st.session_state.show_defense = True
-                st.divider()
+            with st.expander(f"**{i+1}. {q['question']}**", expanded=True):
+                st.caption(f"[{threat}] | Bucket {bucket}: {source}")
+                if data_point:
+                    st.caption(f"Data: {data_point}")
 
-    # Phase 3: Defend
-    if st.session_state.get('show_defense') and st.session_state.get('selected_question'):
-        st.header("Phase 3: Prepare Executive Response")
-        st.caption("Agentic Mode: AI researches data to draft Snowflake's response")
-        q = st.session_state.selected_question
-        st.info(f"**Question:** {q['question']}")
+                # Show defense if already generated
+                if i in st.session_state.defenses:
+                    st.divider()
+                    st.markdown("**Executive Response:**")
+                    st.markdown(st.session_state.defenses[i])
+                else:
+                    # Generate defense button
+                    if st.button("Generate Defense", key=f"defend_{i}", type="secondary"):
+                        defense_agent = DefenseAgent(
+                            api_key=st.session_state.api_key,
+                            data=st.session_state.data,
+                            loader=st.session_state.loader
+                        )
 
-        if st.button("Generate Defense", type="primary"):
-            defense_agent = DefenseAgent(
-                api_key=st.session_state.api_key,
-                data=st.session_state.data,
-                loader=st.session_state.loader
-            )
+                        status = st.empty()
+                        progress_bar = st.progress(0)
 
-            status = st.empty()
-            progress_bar = st.progress(0)
-            response_container = st.empty()
+                        status.info("Researching data...")
+                        step = 0
 
-            status.info("Agent researching defensive data...")
-            step = 0
+                        for event in defense_agent.run(question=q['question'], kpis=st.session_state.kpis):
+                            if event['type'] == 'tool_call':
+                                tool = event.get('tool', '')
+                                step += 1
+                                progress_bar.progress(min(step * 25, 75))
+                                status.info(f"Researching: {tool.replace('_', ' ')}...")
 
-            for event in defense_agent.run(question=q['question'], kpis=st.session_state.kpis):
-                if event['type'] == 'tool_call':
-                    tool = event.get('tool', '')
-                    step += 1
-                    progress_bar.progress(min(step * 25, 75))
-                    status.info(f"Researching: {tool.replace('_', ' ')}...")
+                            elif event['type'] in ['defense', 'complete']:
+                                progress_bar.progress(100)
+                                status.success("Defense ready!")
+                                st.session_state.defenses[i] = event['content']
+                                st.session_state.current_defense = event['content']
 
-                elif event['type'] in ['defense', 'complete']:
-                    progress_bar.progress(100)
-                    status.success("Defense generated!")
-                    response_container.markdown(event['content'])
-                    st.session_state.current_defense = event['content']
+                            elif event['type'] == 'error':
+                                st.error(f"Error: {event['content']}")
 
-                elif event['type'] == 'error':
-                    st.error(f"Agent error: {event['content']}")
+                        st.rerun()
 
         # Phase 4: Drill into data
         if st.session_state.current_defense:

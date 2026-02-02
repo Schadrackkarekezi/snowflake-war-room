@@ -43,6 +43,7 @@ RULES:
 - Only use numbers from tool results - don't make up data
 - Each question needs a source citation in parentheses
 - Frame questions as what analysts will ASK Snowflake
+- Always capitalize "Snowflake" (never "snowflake")
 - Call generate_questions() when ready"""
 
         messages = [{"role": "user", "content": "Research Snowflake's data and generate 5 tough analyst questions."}]
@@ -115,7 +116,9 @@ EXAMPLE GOOD QUESTIONS:
 AVOID GENERIC QUESTIONS LIKE:
 - "How is growth?" or "What's your outlook?"
 
-CRITICAL: Only use numbers that appear in ACTUAL DATA. Don't make up numbers.
+CRITICAL:
+- Only use numbers that appear in ACTUAL DATA. Don't make up numbers.
+- Always capitalize "Snowflake" (never "snowflake").
 
 AGENT SUMMARY:
 {findings}
@@ -281,11 +284,20 @@ RESPONSE GUIDELINES:
 2. Provide data-backed rebuttal with specific numbers from above
 3. Highlight strategic strengths, momentum, or competitive advantages
 4. End with forward-looking confidence
-5. Keep it to 2-3 paragraphs (~150 words)
+5. Use bullet points with key talking points (not paragraphs)
 6. Use executive tone - confident but not dismissive
-7. Make it suitable for investor briefing materials
+7. Always capitalize "Snowflake" (never "snowflake")
 
-Generate the executive response:"""
+FORMAT:
+**Key Talking Points:**
+- [Point 1 with specific data]
+- [Point 2 with specific data]
+- [Point 3 with specific data]
+
+**Suggested Response:**
+[Brief 2-3 sentence executive response]
+
+Generate the response:"""
 
         response = self.client.messages.create(
             model=self.model,

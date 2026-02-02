@@ -111,7 +111,9 @@ def competitive_growth_chart(snow_growth: float, competitors: list) -> go.Figure
         xaxis_title='Company',
         yaxis_title='Growth Rate (%)',
         template='plotly_dark',
-        height=400
+        height=400,
+        margin=dict(t=60, b=40),
+        yaxis=dict(range=[0, max(growth_rates) * 1.2])
     )
     return fig
 
@@ -134,7 +136,9 @@ def customer_growth_chart(snowflake_metrics: pd.DataFrame) -> go.Figure:
         xaxis_title='Quarter',
         yaxis_title='Number of Customers',
         template='plotly_dark',
-        height=400
+        height=400,
+        margin=dict(t=60, b=40),
+        yaxis=dict(range=[0, df['CUSTOMERS_1M_PLUS'].max() * 1.15])
     )
     return fig
 
