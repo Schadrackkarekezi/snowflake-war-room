@@ -16,9 +16,12 @@ st.set_page_config(
 # Custom CSS to prevent green code text
 st.markdown("""
 <style>
-code {
-    color: inherit !important;
+code, .stMarkdown code, pre, .stMarkdown pre, p code, li code {
+    color: rgba(255, 255, 255, 0.9) !important;
     background-color: transparent !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    padding: 0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -189,7 +192,9 @@ def main():
 
                     with col_response:
                         st.markdown("**Executive Response:**")
-                        defense_text = st.session_state.defenses[i].replace('`', '')
+                        # Aggressively remove all backtick patterns
+                        defense_text = st.session_state.defenses[i]
+                        defense_text = re.sub(r'`+', '', defense_text)
                         st.markdown(defense_text)
 
                     with col_charts:
@@ -228,8 +233,10 @@ def main():
                             elif event['type'] in ['defense', 'complete']:
                                 progress_bar.progress(100)
                                 status.success("Defense ready!")
-                                st.session_state.defenses[i] = event['content']
-                                st.session_state.current_defense = event['content']
+                                # Strip all backticks to prevent code formatting
+                                clean = re.sub(r'`+', '', event['content'])
+                                st.session_state.defenses[i] = clean
+                                st.session_state.current_defense = clean
 
                             elif event['type'] == 'error':
                                 st.error(f"Error: {event['content']}")
